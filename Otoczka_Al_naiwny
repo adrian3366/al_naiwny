@@ -1,0 +1,148 @@
+package otoczka_al_naiwny;
+import java.util.Random;
+
+public class Otoczka_Al_naiwny {
+
+     public static int t1[][];
+    public static int otoczka[][];
+    public static int pkt = 50; //liczba punktow
+    public static int wymiar = 400;
+    public static int przesuniecie_x;
+    public static int ilosc_wymiarow=3;
+    public static int centrum[];
+    public static boolean wyrzucone [];
+    public static int gg=0;
+    
+    public static void tworzenie_punktów(){
+        Random generator = new Random();
+        int x, y;
+        for(int i=0; i<pkt; i++) {
+            x = generator.nextInt(wymiar);
+            y = generator.nextInt(wymiar);
+            t1[i][0]=x;
+            t1[i][1]=y;
+        }
+    }
+    public static void wypisanie_punktów(int t[][]){
+        int x=0,y=1;
+        for(int i=0; i<pkt; i++) {
+        System.out.println(i + ": " + t[i][x] + " " + t[i][y]);
+        }
+    }
+    public static int[] liczenie_centrum(int t[])
+    {
+        int x=0,y=0;
+        for(int i=0;i<pkt;i++)
+        {
+            x += t1[i][0];
+            y += t1[i][1];
+        }
+        t[0]=x/pkt;
+        t[1]=y/pkt;
+        return t;
+    }
+    public static int[][] kopiowanie_punktów(int t[][], int tt[][]){
+        for(int i=0; i<pkt; i++) {
+            tt[i][0]=t[i][0];
+            tt[i][1]=t[i][1];
+        }
+        return tt;
+    }
+    public static double[][] tabela(int p[],int q[], int a[], double t[][]){
+        t[0][0]=p[0];
+        t[0][1]=p[1];
+        t[0][2]=1;
+        t[1][0]=q[0];
+        t[1][1]=q[1];
+        t[1][2]=1;
+        t[2][0]=a[0];
+        t[2][1]=a[1];
+        t[2][2]=1;
+        return t;
+    }
+    public static void wyznaczanie_punktow(int t[][])
+    {
+        double t_wyz [][]=new double [3][3];
+        wyrzucone = new boolean [pkt];
+        for (int g = 0; g < pkt; g++)
+            wyrzucone [g]=true;
+        
+        for (int g = 0; g < pkt; g++)
+            for (int k = 0; k < pkt; k++)
+                for (int j = 0; j < pkt; j++)
+                    for (int i = 0; i < pkt; i++) {
+                        if(wyrzucone[g] && i!=j && i!=k && j!=k && i!=g && j!=g && k!=g)
+                        {
+                            tabela(t[i], t[g], t[j], t_wyz);
+                            Macierz tablica1 = new Macierz(t_wyz);
+                            double x1  = tablica1.wyznaczWyznacznik();
+                            tabela(t[j], t[g], t[k], t_wyz);
+                            Macierz tablica2 = new Macierz(t_wyz);
+                            double x2  = tablica2.wyznaczWyznacznik();
+                            tabela(t[k], t[g], t[i], t_wyz);
+                            Macierz tablica3 = new Macierz(t_wyz);
+                            double x3  = tablica3.wyznaczWyznacznik();
+                            if(x1<0&&x2<0&&x3<0){
+                                wyrzucone [g]=false;
+                            }
+                        }
+                    }
+        gg=0;
+        for (int g = 0; g < pkt; g++)
+            if(wyrzucone[g])
+                gg++;
+    }
+    public static int[][] wstawianie_punktów(int t[][], int tt[][]){
+        int a = 0;
+        for(int i=0; i<pkt; i++) {
+            if(wyrzucone[i])
+            {
+            tt[a][0]=t[i][0];
+            tt[a][1]=t[i][1];
+            System.out.println(a + ": " + t[i][0] + " " + t[i][1]);
+            a++;
+            }
+        }
+        tt[gg][0]=tt[0][0];
+        tt[gg][1]=tt[0][1];
+        return tt;
+    }
+    
+     public static int[][] sortowanie_punktow(int t1[][]){
+        double t_wyz [][]=new double [3][3];
+        for(int j=0; j<t1.length; j++)
+            for(int i=1; i<t1.length-1; i++)
+            {
+                tabela(t1[0], t1[i], t1[i+1], t_wyz);
+                Macierz tablica = new Macierz(t_wyz);
+                double x  = tablica.wyznaczWyznacznik();
+                if (x<0)
+                {
+                    int zmienna_x=t1[i][0], zmienna_y=t1[i][1];
+                    t1[i][0]=t1[i+1][0];
+                    t1[i][1]=t1[i+1][1];
+                    t1[i+1][0]=zmienna_x;
+                    t1[i+1][1]=zmienna_y;
+                }
+            }
+        for(int j=0; j<t1.length; j++)
+            System.out.println("\n" + j + ": " + t1[j][0] + " " + t1[j][1]);
+        return t1;
+    }
+    
+    public static void main(String[] args) {
+        t1=new int [pkt][ilosc_wymiarow];
+        tworzenie_punktów();
+        wypisanie_punktów(t1);
+        System.out.println("   Wygenerowane punkty");
+        wyznaczanie_punktow(t1);
+        otoczka=new int [gg+1][ilosc_wymiarow];
+        wstawianie_punktów(t1,otoczka);
+        sortowanie_punktow(otoczka);
+        java.awt.EventQueue.invokeLater(new Runnable() {
+            public void run() {
+                new rysowanie.trasa().repaint();
+            }
+        });
+    }
+}
