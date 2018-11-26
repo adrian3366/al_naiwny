@@ -1,0 +1,54 @@
+package rysowanie;
+import java.awt.*;
+import java.awt.geom.*;
+import javax.swing.JPanel;
+import static otoczka_al_naiwny.Otoczka_Al_naiwny.pkt;
+import static otoczka_al_naiwny.Otoczka_Al_naiwny.przesuniecie_x;
+import static otoczka_al_naiwny.Otoczka_Al_naiwny.t1;
+import static otoczka_al_naiwny.Otoczka_Al_naiwny.centrum;
+import static otoczka_al_naiwny.Otoczka_Al_naiwny.otoczka;
+import static otoczka_al_naiwny.Otoczka_Al_naiwny.wymiar;
+import static otoczka_al_naiwny.Otoczka_Al_naiwny.gg;
+
+public class panel extends JPanel {
+	public panel() {
+		setPreferredSize(new Dimension(wymiar+10, wymiar+10));
+	}
+	@Override
+	protected void paintComponent(Graphics g) {
+		Graphics2D g2d = (Graphics2D) g;
+                g2d.setColor(Color.WHITE);
+                for(int i=0; i<4; i++) {    //osie x y
+                Line2D os_x = new Line2D.Double(przesuniecie_x + 100*i,0,przesuniecie_x +100*i,wymiar);
+                g2d.draw(os_x);
+                Line2D os_y = new Line2D.Double(0,100*i,wymiar,100*i);
+                g2d.draw(os_y);
+                }
+                g2d.setColor(Color.BLACK);
+                for(int i=0; i<pkt; i++) {  //punkty
+                //int i =0;
+                    double xx = przesuniecie_x + t1[i][0],    yy = wymiar-t1[i][1];
+                    Ellipse2D circle = new Ellipse2D.Double(xx-5,yy-5,10,10);
+                    g2d.draw(circle);
+                }
+                //Line2D linia = new Line2D.Double(wymiar-t1[0][0],wymiar-t1[0][1],wymiar-t1[1][0],wymiar-t1[1][1]);
+                //g2d.draw(linia);
+                for(int i = 0; i<pkt-1;i++)     // kolejnosc punktow
+                {
+                    if(i!=0)
+                        g2d.setColor(Color.red);
+                    Line2D linia2 = new Line2D.Double(przesuniecie_x + t1[i][0],wymiar-t1[i][1],przesuniecie_x + t1[i+1][0],wymiar-t1[i+1][1]);
+                    //g2d.draw(linia2);
+                }
+                for(int i = 0; i<otoczka.length-1;i++)     // kolejnosc punktow
+                {
+                    g2d.setColor(Color.blue);
+                    //if(otoczka[i][0]!=0&&otoczka[i][1]!=0)
+                    //{
+                    Line2D linia3 = new Line2D.Double(przesuniecie_x + otoczka[i][0] +5,wymiar-otoczka[i][1],przesuniecie_x + otoczka[i+1][0] +5,wymiar-otoczka[i+1][1]);
+                    g2d.draw(linia3);
+                    g2d.drawString("P"+i, (int) przesuniecie_x + otoczka[i][0], (int) wymiar-otoczka[i][1]);
+                    //}
+                }
+	}
+}
